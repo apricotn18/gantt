@@ -7,13 +7,12 @@ interface Props {
   scrollRef: React.RefObject<HTMLDivElement>;
   onToggleExpand: (id: number) => void;
   onEdit: (id: number) => void;
-  onContextMenu: (e: React.MouseEvent, id: number) => void;
   onAddTask: () => void;
 }
 
 export default function WBSPanel({
   tasks, visible, onScrollSync, scrollRef,
-  onToggleExpand, onEdit, onContextMenu, onAddTask,
+  onToggleExpand, onEdit, onAddTask,
 }: Props) {
   return (
     <div className="wbs-panel">
@@ -44,7 +43,6 @@ export default function WBSPanel({
               <div key={`${t.id}-${t.isRoot}`}>
                 <div
                   className={`task-row${t.isRoot ? '' : ' sub-task'}`}
-                  onContextMenu={e => onContextMenu(e, t.id)}
                 >
                   <div className="task-name-cell" onClick={() => onEdit(t.id)}>
                     {!t.isRoot && <span className="indent" style={{ width: 20 }} />}

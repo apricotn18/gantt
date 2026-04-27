@@ -9,10 +9,9 @@ interface Props {
   scrollRef: React.RefObject<HTMLDivElement>;
   onScrollSync: (scrollTop: number) => void;
   onEdit: (id: number) => void;
-  onContextMenu: (e: React.MouseEvent, id: number) => void;
 }
 
-export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, onEdit, onContextMenu }: Props) {
+export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, onEdit }: Props) {
   const { minD, maxD } = calcRange(tasks);
   const days = getDaysArray(minD, maxD);
   const totalW = days.length * DAY_W;
@@ -46,7 +45,6 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
         key={t.id}
         style={{ position: 'absolute', left: x1, top, width: bw, height: barH, cursor: 'pointer', filter }}
         onClick={() => onEdit(t.id)}
-        onContextMenu={e => { e.preventDefault(); onContextMenu(e, t.id); }}
       >
         <div
           className="gantt-bar"

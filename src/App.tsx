@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import ContextMenu from './components/ContextMenu';
 import GanttPanel from './components/GanttPanel';
 import TaskModal from './components/TaskModal';
 import WBSPanel from './components/WBSPanel';
-import type { CtxMenuState, ModalState, Task } from './types';
+import type { ModalState, Task } from './types';
 import { calcRange, today, visibleTasks } from './utils';
 
 const INITIAL_TASKS: Task[] = [
@@ -25,7 +24,6 @@ let nextId = 20;
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [modal, setModal] = useState<ModalState>({ open: false, editingId: null, isAddingSub: false, addSubParentId: null });
-  const [ctx, setCtx] = useState<CtxMenuState>({ open: false, x: 0, y: 0, taskId: null });
 
   const wbsScrollRef = useRef<HTMLDivElement>(null);
   const ganttScrollRef = useRef<HTMLDivElement>(null);
@@ -67,34 +65,20 @@ const openEditModal = (id: number) => setModal({ open: true, editingId: id, isAd
 
   const toggleExpand = (id: number) => setTasks(ts => ts.map(t => t.id === id ? { ...t, expanded: !t.expanded } : t));
 
-  const openCtxMenu = (e: React.MouseEvent, id: number) => {
-    e.preventDefault();
-    setCtx({ open: true, x: e.clientX, y: e.clientY, taskId: id });
-  };
-  const closeCtxMenu = () => setCtx(c => ({ ...c, open: false }));
-
-  const ctxEdit = () => { closeCtxMenu(); if (ctx.taskId !== null) openEditModal(ctx.taskId); };
-const ctxDelete = () => {
-    closeCtxMenu();
-    if (ctx.taskId === null) return;
-    const t = tasks.find(x => x.id === ctx.taskId);
+  const handleDelete = (id: number) => {
+    const t = tasks.find(x => x.id === id);
     if (!t) return;
-    const hasSubs = tasks.some(x => x.parentId === ctx.taskId);
+    const hasSubs = tasks.some(x => x.parentId === id);
     const msg = hasSubs ? `「${t.name}」とそのサブタスクをすべて削除しますか？` : `「${t.name}」を削除しますか？`;
     if (!confirm(msg)) return;
-    setTasks(ts => ts.filter(x => x.id !== ctx.taskId && x.parentId !== ctx.taskId));
+    setTasks(ts => ts.filter(x => x.id !== id && x.parentId !== id));
+    closeModal();
   };
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!(e.target as HTMLElement).closest('#ctx-menu')) closeCtxMenu();
-    };
-    const keyHandler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { closeModal(); closeCtxMenu(); }
-    };
-    document.addEventListener('click', handler);
+    const keyHandler = (e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); };
     document.addEventListener('keydown', keyHandler);
-    return () => { document.removeEventListener('click', handler); document.removeEventListener('keydown', keyHandler); };
+    return () => document.removeEventListener('keydown', keyHandler);
   }, []);
 
   return (
@@ -124,7 +108,6 @@ const ctxDelete = () => {
           onScrollSync={top => syncScroll('wbs', top)}
           onToggleExpand={toggleExpand}
           onEdit={openEditModal}
-          onContextMenu={openCtxMenu}
           onAddTask={openAddTaskModal}
         />
         <GanttPanel
@@ -133,15 +116,10 @@ const ctxDelete = () => {
           scrollRef={ganttScrollRef}
           onScrollSync={top => syncScroll('gantt', top)}
           onEdit={openEditModal}
-          onContextMenu={openCtxMenu}
         />
       </div>
 
-      <TaskModal modal={modal} tasks={tasks} onClose={closeModal} onSubmit={handleSubmit} />
-
-      <div id="ctx-menu">
-        <ContextMenu ctx={ctx} tasks={tasks} onClose={closeCtxMenu} onEdit={ctxEdit} onDelete={ctxDelete} />
-      </div>
+      <TaskModal modal={modal} tasks={tasks} onClose={closeModal} onSubmit={handleSubmit} onDelete={handleDelete} />
     </>
   );
 }

@@ -20,9 +20,3 @@ export interface ModalState {
   addSubParentId: number | null;
 }
 
-export interface CtxMenuState {
-  open: boolean;
-  x: number;
-  y: number;
-  taskId: number | null;
-}
