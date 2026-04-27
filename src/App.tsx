@@ -3,7 +3,7 @@ import GanttPanel from './components/GanttPanel';
 import TaskModal from './components/TaskModal';
 import WBSPanel from './components/WBSPanel';
 import type { ModalState, Task } from './types';
-import { calcRange, today, visibleTasks } from './utils';
+import { calcRange, syncParentProgress, today, visibleTasks } from './utils';
 
 const INITIAL_TASKS: Task[] = [
   { id:1,  name:'フェーズ1：要件定義',   start:'2026-05-01', end:'2026-05-31', progress:100, color:'#0ea5e9', expanded:true,  parentId:null },
@@ -54,13 +54,13 @@ export default function App() {
 
   const handleSubmit = (data: { name: string; start: string; end: string; progress: number; color: string }) => {
     if (modal.editingId !== null) {
-      setTasks(ts => ts.map(t => t.id === modal.editingId ? { ...t, ...data } : t));
+      setTasks(ts => syncParentProgress(ts.map(t => t.id === modal.editingId ? { ...t, ...data } : t)));
     } else if (modal.isAddingSub && modal.addSubParentId !== null) {
       const pid = modal.addSubParentId;
-      setTasks(ts => [
+      setTasks(ts => syncParentProgress([
         ...ts.map(t => t.id === pid ? { ...t, expanded: true } : t),
         { id: nextId++, ...data, expanded: false, parentId: pid },
-      ]);
+      ]));
     } else {
       setTasks(ts => [...ts, { id: nextId++, ...data, expanded: true, parentId: null }]);
     }
@@ -76,7 +76,7 @@ export default function App() {
     const hasSubs = tasks.some(x => x.parentId === id);
     const msg = hasSubs ? `「${t.name}」とそのサブタスクをすべて削除しますか？` : `「${t.name}」を削除しますか？`;
     if (!confirm(msg)) return;
-    setTasks(ts => ts.filter(x => x.id !== id && x.parentId !== id));
+    setTasks(ts => syncParentProgress(ts.filter(x => x.id !== id && x.parentId !== id)));
     closeModal();
   };
 

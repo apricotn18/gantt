@@ -50,6 +50,7 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
             width: '100%', height: '100%',
             background: `${t.color}33`,
             position: 'relative', overflow: 'hidden',
+            filter: t.isRoot ? 'none' : 'grayscale(40%) opacity(0.6)',
           }}
           title={`${t.name}\n${t.start} → ${t.end}\n進捗: ${t.progress}%`}
         >

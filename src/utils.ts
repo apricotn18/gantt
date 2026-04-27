@@ -62,6 +62,16 @@ export function visibleTasks(tasks: Task[]): VisibleTask[] {
   return result;
 }
 
+export function syncParentProgress(tasks: Task[]): Task[] {
+  return tasks.map(t => {
+    if (t.parentId !== null) return t;
+    const subs = tasks.filter(s => s.parentId === t.id);
+    if (subs.length === 0) return t;
+    const avg = Math.round(subs.reduce((sum, s) => sum + s.progress, 0) / subs.length);
+    return { ...t, progress: avg };
+  });
+}
+
 export function computeBodyHeight(vis: VisibleTask[]): number {
   let h = 0;
   vis.forEach(() => {
