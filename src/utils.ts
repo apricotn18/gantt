@@ -1,8 +1,15 @@
 import type { Task, VisibleTask } from './types';
 
 export const COLORS = [
-  '#3b7de8','#10b981','#f59e0b','#ef4444','#06b6d4',
-  '#ec4899','#14b8a6','#f97316','#84cc16','#0ea5e9',
+  '#0ea5e9',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#06b6d4',
+  '#14b8a6',
+  '#f97316',
+  '#ec4899',
+  '#84cc16',
 ];
 
 export const today = (() => {
@@ -11,7 +18,12 @@ export const today = (() => {
   return d;
 })();
 
-export const fmt = (d: Date): string => d.toISOString().slice(0, 10);
+export const fmt = (d: Date): string => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
 
 export function parseDate(s: string): Date {
   const [y, m, day] = s.split('-').map(Number);
