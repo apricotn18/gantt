@@ -46,7 +46,7 @@ export default function WBSPanel({
                   className={`task-row${t.isRoot ? '' : ' sub-task'}`}
                   onContextMenu={e => onContextMenu(e, t.id)}
                 >
-                  <div className="task-name-cell" onDoubleClick={() => onEdit(t.id)}>
+                  <div className="task-name-cell" onClick={() => onEdit(t.id)}>
                     {!t.isRoot && <span className="indent" style={{ width: 20 }} />}
                     {hasSubs && t.isRoot ? (
                       <div className="expand-btn" onClick={e => { e.stopPropagation(); onToggleExpand(t.id); }}>

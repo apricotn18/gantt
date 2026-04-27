@@ -24,7 +24,6 @@ let nextId = 20;
 
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
-  const [dayW, setDayW] = useState(24);
   const [modal, setModal] = useState<ModalState>({ open: false, editingId: null, isAddingSub: false, addSubParentId: null });
   const [ctx, setCtx] = useState<CtxMenuState>({ open: false, x: 0, y: 0, taskId: null });
 
@@ -44,13 +43,11 @@ export default function App() {
 
   const goToToday = useCallback(() => {
     const { minD } = calcRange(tasks);
-    const offset = Math.floor((today.getTime() - minD.getTime()) / 86400000) * dayW - 32;
+    const offset = Math.floor((today.getTime() - minD.getTime()) / 86400000) * 24 - 32;
     if (ganttScrollRef.current) ganttScrollRef.current.scrollLeft = Math.max(0, offset);
-  }, [tasks, dayW]);
+  }, [tasks]);
 
   useEffect(() => { setTimeout(goToToday, 100); }, [goToToday]);
-
-  const changeZoom = (delta: number) => setDayW(prev => Math.max(8, Math.min(60, prev + delta)));
 
   const openAddTaskModal = () => setModal({ open: true, editingId: null, isAddingSub: false, addSubParentId: null });
 const openEditModal = (id: number) => setModal({ open: true, editingId: id, isAddingSub: false, addSubParentId: null });
@@ -117,11 +114,6 @@ const ctxDelete = () => {
           </svg>
           今日
         </button>
-        <div className="zoom-ctrl">
-          <button className="zoom-btn" onClick={() => changeZoom(-4)}>−</button>
-          <span className="zoom-label">{dayW}px</span>
-          <button className="zoom-btn" onClick={() => changeZoom(4)}>＋</button>
-        </div>
       </div>
 
       <div className="main">
@@ -138,7 +130,6 @@ const ctxDelete = () => {
         <GanttPanel
           tasks={tasks}
           visible={visible}
-          dayW={dayW}
           scrollRef={ganttScrollRef}
           onScrollSync={top => syncScroll('gantt', top)}
           onEdit={openEditModal}

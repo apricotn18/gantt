@@ -65,20 +65,6 @@ body {
 .btn.primary:hover { background: #f0f4ff; }
 .btn svg { width: 13px; height: 13px; }
 
-.zoom-ctrl { display: flex; align-items: center; gap: 4px; margin-left: auto; }
-.zoom-btn {
-  width: 28px; height: 28px;
-  border-radius: 5px;
-  border: 1px solid rgba(255,255,255,.3);
-  background: rgba(255,255,255,.15);
-  color: rgba(255,255,255,.8);
-  font-size: 15px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
-.zoom-btn:hover { background: rgba(255,255,255,.25); color: #ffffff; }
-.zoom-label { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,.6); min-width: 36px; text-align: center; }
 
 /* ── Main Layout ── */
 .main {
