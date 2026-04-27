@@ -1,16 +1,28 @@
+export interface ChildTask {
+  id: number;
+  name: string;
+  hours: Record<string, number>;
+}
+
 export interface Task {
   id: number;
   name: string;
   start: string;
   end: string;
-  progress: number;
   color: string;
   expanded: boolean;
-  parentId: number | null;
+  children: ChildTask[];
 }
 
-export interface VisibleTask extends Task {
+export interface VisibleTask {
+  id: number;
+  name: string;
+  start: string;
+  end: string;
+  color: string;
+  hours: Record<string, number> | null;
   isRoot: boolean;
+  expanded: boolean;
 }
 
 export interface ModalState {
@@ -19,4 +31,3 @@ export interface ModalState {
   isAddingSub: boolean;
   addSubParentId: number | null;
 }
-

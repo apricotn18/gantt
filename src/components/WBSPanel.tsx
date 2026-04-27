@@ -19,7 +19,7 @@ export default function WBSPanel({
         <div>タスク名</div>
         <div>開始日</div>
         <div>終了日</div>
-        <div>進捗</div>
+        <div>工数</div>
       </div>
       <div
         className="wbs-body"
@@ -53,16 +53,15 @@ export default function WBSPanel({
                   ) : (
                     <div className="expand-placeholder" />
                   )}
-                  <div className="task-color-dot" style={{ background: t.color }} />
+                  {t.isRoot && <div className="task-color-dot" style={{ background: t.color }} />}
                   <button className="task-label" onClick={e => { e.stopPropagation(); onEdit(t.id); }}>{t.name}</button>
                 </div>
-                <div className="task-date">{t.start.slice(5).replace('-', '/')}</div>
-                <div className="task-date">{t.end.slice(5).replace('-', '/')}</div>
+                <div className="task-date">{t.isRoot ? t.start.slice(5).replace('-', '/') : ''}</div>
+                <div className="task-date">{t.isRoot ? t.end.slice(5).replace('-', '/') : ''}</div>
                 <div className="progress-cell">
-                  <span className="progress-pct">{t.progress}%</span>
-                  <div className="progress-bar-track">
-                    <div className="progress-bar-fill" style={{ width: `${t.progress}%`, background: t.color }} />
-                  </div>
+                  <span className="progress-pct">
+                    {t.hours != null ? `${Object.values(t.hours).reduce((a, b) => a + b, 0)}h` : '—'}
+                  </span>
                 </div>
               </div>
             </div>
