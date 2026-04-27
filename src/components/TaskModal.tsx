@@ -27,13 +27,13 @@ export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete }:
       const parent = tasks.find(t => t.id === modal.addSubParentId);
       setName('');
       setStart(parent ? parent.start : fmt(today));
-      setEnd(parent ? parent.end : fmt(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)));
+      setEnd(parent ? parent.end : fmt(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)));
       setProgress(0);
       setColor(parent ? parent.color : COLORS[0]);
     } else {
       setName('');
       setStart(fmt(today));
-      setEnd(fmt(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)));
+      setEnd(fmt(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)));
       setProgress(0);
       setColor(COLORS[0]);
     }
@@ -60,7 +60,7 @@ export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete }:
         <div className="form-group">
           <label>タスク名</label>
           <input ref={nameRef} type="text" value={name} onChange={e => setName(e.target.value)}
-            placeholder="タスク名を入力…" onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
         </div>
         <div className="form-row">
           <div className="form-group">

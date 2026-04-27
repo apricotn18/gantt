@@ -1,18 +1,18 @@
-import type { Task, VisibleTask } from '../types';
+import type { VisibleTask } from '../types';
 
 interface Props {
-  tasks: Task[];
   visible: VisibleTask[];
   onScrollSync: (scrollTop: number) => void;
   scrollRef: React.RefObject<HTMLDivElement>;
   onToggleExpand: (id: number) => void;
   onEdit: (id: number) => void;
   onAddTask: () => void;
+  onAddSub: (id: number) => void;
 }
 
 export default function WBSPanel({
-  tasks, visible, onScrollSync, scrollRef,
-  onToggleExpand, onEdit, onAddTask,
+  visible, onScrollSync, scrollRef,
+  onToggleExpand, onEdit, onAddTask, onAddSub,
 }: Props) {
   return (
     <div className="wbs-panel">
@@ -37,37 +37,37 @@ export default function WBSPanel({
             タスクがありません
           </div>
         ) : (
-          visible.map(t => {
-            const hasSubs = tasks.some(x => x.parentId === t.id);
-            return (
-              <div key={`${t.id}-${t.isRoot}`}>
-                <div
-                  className={`task-row${t.isRoot ? '' : ' sub-task'}`}
-                >
-                  <div className="task-name-cell" onClick={() => onEdit(t.id)}>
-                    {!t.isRoot && <span className="indent" style={{ width: 20 }} />}
-                    {hasSubs && t.isRoot ? (
-                      <div className="expand-btn" onClick={e => { e.stopPropagation(); onToggleExpand(t.id); }}>
-                        {t.expanded ? '−' : '+'}
-                      </div>
-                    ) : (
-                      <div className="expand-placeholder" />
-                    )}
-                    <div className="task-color-dot" style={{ background: t.color }} />
-                    <span className="task-label">{t.name}</span>
-                  </div>
-                  <div className="task-date">{t.start.slice(5).replace('-', '/')}</div>
-                  <div className="task-date">{t.end.slice(5).replace('-', '/')}</div>
-                  <div className="progress-cell">
-                    <span className="progress-pct">{t.progress}%</span>
-                    <div className="progress-bar-track">
-                      <div className="progress-bar-fill" style={{ width: `${t.progress}%`, background: t.color }} />
+          visible.map(t => (
+            <div key={`${t.id}-${t.isRoot}`}>
+              <div
+                className="task-row"
+                onClick={() => t.isRoot && onToggleExpand(t.id)}
+              >
+                <div className="task-name-cell">
+                  {!t.isRoot && <span className="indent" style={{ width: 20 }} />}
+                  {t.isRoot ? (
+                    <div className="expand-btn" title="子タスクを追加" onClick={e => { e.stopPropagation(); onAddSub(t.id); }}>
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" width="10" height="10">
+                        <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
+                      </svg>
                     </div>
+                  ) : (
+                    <div className="expand-placeholder" />
+                  )}
+                  <div className="task-color-dot" style={{ background: t.color }} />
+                  <span className="task-label" onClick={e => { e.stopPropagation(); onEdit(t.id); }}>{t.name}</span>
+                </div>
+                <div className="task-date">{t.start.slice(5).replace('-', '/')}</div>
+                <div className="task-date">{t.end.slice(5).replace('-', '/')}</div>
+                <div className="progress-cell">
+                  <span className="progress-pct">{t.progress}%</span>
+                  <div className="progress-bar-track">
+                    <div className="progress-bar-fill" style={{ width: `${t.progress}%`, background: t.color }} />
                   </div>
                 </div>
               </div>
-            );
-          })
+            </div>
+          ))
         )}
       </div>
       <div className="wbs-footer">

@@ -6,17 +6,17 @@ import type { ModalState, Task } from './types';
 import { calcRange, today, visibleTasks } from './utils';
 
 const INITIAL_TASKS: Task[] = [
-  { id:1,  name:'フェーズ1：要件定義',   start:'2026-05-01', end:'2026-05-31', progress:100, color:'#4f8ef7', expanded:true,  parentId:null },
-  { id:2,  name:'ヒアリング・調査',       start:'2026-05-01', end:'2026-05-15', progress:100, color:'#4f8ef7', expanded:false, parentId:1 },
-  { id:3,  name:'要件書作成',             start:'2026-05-16', end:'2026-05-31', progress:100, color:'#4f8ef7', expanded:false, parentId:1 },
+  { id:1,  name:'フェーズ1：要件定義',   start:'2026-05-01', end:'2026-05-31', progress:100, color:'#0ea5e9', expanded:true,  parentId:null },
+  { id:2,  name:'ヒアリング・調査',       start:'2026-05-01', end:'2026-05-15', progress:100, color:'#0ea5e9', expanded:false, parentId:1 },
+  { id:3,  name:'要件書作成',             start:'2026-05-16', end:'2026-05-31', progress:100, color:'#0ea5e9', expanded:false, parentId:1 },
   { id:4,  name:'フェーズ2：設計',        start:'2026-05-01', end:'2026-05-30', progress:80,  color:'#06b6d4', expanded:true,  parentId:null },
   { id:5,  name:'UI/UXデザイン',          start:'2026-05-01', end:'2026-05-20', progress:100, color:'#06b6d4', expanded:false, parentId:4 },
   { id:6,  name:'DB設計',                 start:'2026-05-10', end:'2026-05-30', progress:60,  color:'#06b6d4', expanded:false, parentId:4 },
-  { id:7,  name:'フェーズ3：開発',        start:'2025-06-01', end:'2025-06-31', progress:30,  color:'#10b981', expanded:true,  parentId:null },
-  { id:8,  name:'フロントエンド実装',     start:'2025-06-01', end:'2025-06-30', progress:40,  color:'#10b981', expanded:false, parentId:7 },
-  { id:9,  name:'バックエンド実装',       start:'2025-06-15', end:'2025-06-15', progress:25,  color:'#10b981', expanded:false, parentId:7 },
-  { id:10, name:'テスト',                 start:'2025-07-01', end:'2025-07-31', progress:0,   color:'#f59e0b', expanded:false, parentId:7 },
-  { id:11, name:'フェーズ4：リリース',    start:'2025-08-01', end:'2025-08-31', progress:0,   color:'#ef4444', expanded:false, parentId:null },
+  { id:7,  name:'フェーズ3：開発',        start:'2026-06-01', end:'2026-06-31', progress:30,  color:'#10b981', expanded:true,  parentId:null },
+  { id:8,  name:'フロントエンド実装',     start:'2026-06-01', end:'2026-06-30', progress:40,  color:'#10b981', expanded:false, parentId:7 },
+  { id:9,  name:'バックエンド実装',       start:'2026-06-15', end:'2026-06-15', progress:25,  color:'#10b981', expanded:false, parentId:7 },
+  { id:10, name:'テスト',                 start:'2026-07-01', end:'2026-07-31', progress:0,   color:'#f59e0b', expanded:false, parentId:7 },
+  { id:11, name:'フェーズ4：リリース',    start:'2026-08-01', end:'2026-08-31', progress:0,   color:'#ef4444', expanded:false, parentId:null },
 ];
 
 let nextId = 20;
@@ -48,7 +48,8 @@ export default function App() {
   useEffect(() => { setTimeout(goToToday, 100); }, [goToToday]);
 
   const openAddTaskModal = () => setModal({ open: true, editingId: null, isAddingSub: false, addSubParentId: null });
-const openEditModal = (id: number) => setModal({ open: true, editingId: id, isAddingSub: false, addSubParentId: null });
+  const openAddSubModal = (id: number) => setModal({ open: true, editingId: null, isAddingSub: true, addSubParentId: id });
+  const openEditModal = (id: number) => setModal({ open: true, editingId: id, isAddingSub: false, addSubParentId: null });
   const closeModal = () => setModal(m => ({ ...m, open: false }));
 
   const handleSubmit = (data: { name: string; start: string; end: string; progress: number; color: string }) => {
@@ -102,13 +103,13 @@ const openEditModal = (id: number) => setModal({ open: true, editingId: id, isAd
 
       <div className="main">
         <WBSPanel
-          tasks={tasks}
           visible={visible}
           scrollRef={wbsScrollRef}
           onScrollSync={top => syncScroll('wbs', top)}
           onToggleExpand={toggleExpand}
           onEdit={openEditModal}
           onAddTask={openAddTaskModal}
+          onAddSub={openAddSubModal}
         />
         <GanttPanel
           tasks={tasks}

@@ -38,12 +38,10 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
     const x2 = Math.ceil((e.getTime() - minD.getTime()) / 86400000 + 1) * DAY_W;
     const bw = Math.max(x2 - x1, DAY_W);
     const top = y + (40 - barH) / 2;
-    const filter = t.isRoot ? 'none' : 'grayscale(60%) opacity(0.45)';
-
     bars.push(
       <div
         key={t.id}
-        style={{ position: 'absolute', left: x1, top, width: bw, height: barH, cursor: 'pointer', filter }}
+        style={{ position: 'absolute', left: x1, top, width: bw, height: barH, cursor: 'pointer' }}
         onClick={() => onEdit(t.id)}
       >
         <div
