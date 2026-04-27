@@ -6,13 +6,12 @@ interface Props {
   scrollRef: React.RefObject<HTMLDivElement>;
   onToggleExpand: (id: number) => void;
   onEdit: (id: number) => void;
-  onAddTask: () => void;
   onAddSub: (id: number) => void;
 }
 
 export default function WBSPanel({
   visible, onScrollSync, scrollRef,
-  onToggleExpand, onEdit, onAddTask, onAddSub,
+  onToggleExpand, onEdit, onAddSub,
 }: Props) {
   return (
     <div className="wbs-panel">
@@ -69,14 +68,6 @@ export default function WBSPanel({
             </div>
           ))
         )}
-      </div>
-      <div className="wbs-footer">
-        <button className="btn" onClick={onAddTask} style={{ width: '100%' }}>
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
-          </svg>
-          タスクを追加
-        </button>
       </div>
     </div>
   );

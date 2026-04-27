@@ -56,7 +56,11 @@ export default function App() {
     if (modal.editingId !== null) {
       setTasks(ts => ts.map(t => t.id === modal.editingId ? { ...t, ...data } : t));
     } else if (modal.isAddingSub && modal.addSubParentId !== null) {
-      setTasks(ts => [...ts, { id: nextId++, ...data, expanded: false, parentId: modal.addSubParentId }]);
+      const pid = modal.addSubParentId;
+      setTasks(ts => [
+        ...ts.map(t => t.id === pid ? { ...t, expanded: true } : t),
+        { id: nextId++, ...data, expanded: false, parentId: pid },
+      ]);
     } else {
       setTasks(ts => [...ts, { id: nextId++, ...data, expanded: true, parentId: null }]);
     }
@@ -108,7 +112,6 @@ export default function App() {
           onScrollSync={top => syncScroll('wbs', top)}
           onToggleExpand={toggleExpand}
           onEdit={openEditModal}
-          onAddTask={openAddTaskModal}
           onAddSub={openAddSubModal}
         />
         <GanttPanel

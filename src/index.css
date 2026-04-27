@@ -14,7 +14,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Syne', sans-serif;
+  font-family: sans-serif;
   background: var(--bg);
   color: var(--text);
   height: 100vh;
@@ -53,7 +53,7 @@ body {
   border: 1px solid rgba(255,255,255,0);
   background: rgba(255,255,255,.15);
   color: #ffffff;
-  font-family: 'Syne', sans-serif;
+  font-family: sans-serif;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.2;
@@ -225,12 +225,6 @@ body {
   padding: 3px 8px;
   border-radius: 4px;
   transition: all .15s;
-}
-
-.wbs-footer {
-  padding: 10px 12px;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
 }
 
 /* ── Gantt Panel ── */
