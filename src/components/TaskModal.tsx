@@ -7,9 +7,10 @@ interface Props {
   tasks: Task[];
   onClose: () => void;
   onSubmit: (data: { name: string; start: string; end: string; progress: number; color: string }) => void;
+  onDelete: (id: number) => void;
 }
 
-export default function TaskModal({ modal, tasks, onClose, onSubmit }: Props) {
+export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete }: Props) {
   const nameRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState('');
   const [start, setStart] = useState('');
@@ -80,6 +81,9 @@ export default function TaskModal({ modal, tasks, onClose, onSubmit }: Props) {
           </div>
         </div>
         <div className="modal-actions">
+          {modal.editingId !== null && (
+            <button className="btn danger" onClick={() => onDelete(modal.editingId!)}>削除</button>
+          )}
           <button className="btn" onClick={onClose}>キャンセル</button>
           <button className="btn primary" onClick={handleSubmit}>保存</button>
         </div>

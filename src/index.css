@@ -63,6 +63,8 @@ body {
 .btn:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.5); color: #ffffff; }
 .btn.primary { background: #ffffff; border-color: #ffffff; color: #556d94; }
 .btn.primary:hover { background: #f0f4ff; }
+.btn.danger { background: transparent; border-color: #ef4444; color: #ef4444; }
+.btn.danger:hover { background: #ef4444; color: #ffffff; }
 .btn svg { width: 13px; height: 13px; }
 
 
