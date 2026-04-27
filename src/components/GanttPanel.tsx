@@ -39,9 +39,9 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
     const bw = Math.max(x2 - x1, DAY_W);
     const top = y + (40 - barH) / 2;
     bars.push(
-      <div
+      <button
         key={t.id}
-        style={{ position: 'absolute', left: x1, top, width: bw, height: barH, cursor: 'pointer' }}
+        style={{ position: 'absolute', left: x1, top, width: bw, height: barH, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
         onClick={() => onEdit(t.id)}
       >
         <div
@@ -62,7 +62,7 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
             <div className="gantt-bar-label">{t.name}</div>
           )}
         </div>
-      </div>
+      </button>
     );
 
     y += 40;

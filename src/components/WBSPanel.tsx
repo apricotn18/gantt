@@ -45,16 +45,16 @@ export default function WBSPanel({
                 <div className="task-name-cell">
                   {!t.isRoot && <span className="indent" style={{ width: 20 }} />}
                   {t.isRoot ? (
-                    <div className="expand-btn" title="子タスクを追加" onClick={e => { e.stopPropagation(); onAddSub(t.id); }}>
+                    <button className="expand-btn" title="子タスクを追加" onClick={e => { e.stopPropagation(); onAddSub(t.id); }}>
                       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" width="10" height="10">
                         <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
                       </svg>
-                    </div>
+                    </button>
                   ) : (
                     <div className="expand-placeholder" />
                   )}
                   <div className="task-color-dot" style={{ background: t.color }} />
-                  <span className="task-label" onClick={e => { e.stopPropagation(); onEdit(t.id); }}>{t.name}</span>
+                  <button className="task-label" onClick={e => { e.stopPropagation(); onEdit(t.id); }}>{t.name}</button>
                 </div>
                 <div className="task-date">{t.start.slice(5).replace('-', '/')}</div>
                 <div className="task-date">{t.end.slice(5).replace('-', '/')}</div>

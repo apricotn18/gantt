@@ -80,7 +80,7 @@ export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete }:
           <label>カラー</label>
           <div className="color-picker-row">
             {COLORS.map(c => (
-              <div key={c} className={`color-swatch${color === c ? ' selected' : ''}`}
+              <button key={c} className={`color-swatch${color === c ? ' selected' : ''}`}
                 style={{ background: c }} onClick={() => setColor(c)} />
             ))}
           </div>
