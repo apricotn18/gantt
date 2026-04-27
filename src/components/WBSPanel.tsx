@@ -40,7 +40,7 @@ export default function WBSPanel({
           visible.map(t => (
             <div key={`${t.id}-${t.isRoot}`}>
               <div
-                className="task-row"
+                className={`task-row${t.isRoot ? '' : ' sub-task'}`}
                 onClick={() => t.isRoot && onToggleExpand(t.id)}
               >
                 <div className="task-name-cell">

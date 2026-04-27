@@ -122,8 +122,10 @@ body {
   transition: background .1s;
   background: rgba(59, 125, 232, .03);
 }
-.task-row:hover { background: rgba(59,125,232,.05); }
+.task-row:not(.sub-task):hover { background: rgba(59,125,232,.05); }
+.task-label:hover { color: #556d94; text-decoration: underline; }
 .task-row.selected { background: rgba(59,125,232,.08); }
+.task-row.sub-task { background: #fff; }
 
 
 .task-row > div {
@@ -163,6 +165,7 @@ body {
 .indent { display: inline-block; flex-shrink: 0; }
 
 .task-label {
+  min-width: 60%;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-size: 12px;
   font-weight: 600;
@@ -323,7 +326,7 @@ body {
   left: 6px; right: 6px;
   font-size: 10px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
