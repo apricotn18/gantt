@@ -37,7 +37,7 @@ export default function TaskModal({ modal, tasks, onClose, onSubmit }: Props) {
       setColor(COLORS[0]);
     }
     setTimeout(() => nameRef.current?.focus(), 100);
-  }, [modal.open]);
+  }, [modal.open, modal.editingId, modal.isAddingSub, modal.addSubParentId, tasks]);
 
   const handleSubmit = () => {
     if (!name.trim() || !start || !end) return;

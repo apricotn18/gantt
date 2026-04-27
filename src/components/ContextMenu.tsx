@@ -8,7 +8,7 @@ interface Props {
   onDelete: () => void;
 }
 
-export default function ContextMenu({ ctx, tasks, onClose, onEdit, onDelete }: Props) {
+export default function ContextMenu({ ctx, onEdit, onDelete }: Props) {
   return (
     <div className={`ctx-menu${ctx.open ? ' open' : ''}`} style={{ left: ctx.x, top: ctx.y }}>
       <div className="ctx-item" onClick={onEdit}>

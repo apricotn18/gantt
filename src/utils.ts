@@ -52,7 +52,7 @@ export function visibleTasks(tasks: Task[]): VisibleTask[] {
 
 export function computeBodyHeight(vis: VisibleTask[]): number {
   let h = 0;
-  vis.forEach(t => {
+  vis.forEach(() => {
     h += 40;
   });
   return h || 200;
