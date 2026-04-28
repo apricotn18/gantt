@@ -179,19 +179,11 @@ body {
 
 /* Date/Progress cells */
 .task-date {
-  font-family: 'DM Mono', monospace;
   font-size: 11px;
   color: var(--text2);
 }
 
-.progress-cell {
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  padding: 6px 10px !important;
-  gap: 3px;
-}
 .progress-pct {
-  font-family: 'DM Mono', monospace;
   font-size: 10px;
   color: var(--text2);
 }
@@ -274,7 +266,6 @@ body {
 .gantt-day {
   display: flex; align-items: center; justify-content: center;
   border-left: 1px solid var(--border);
-  font-family: 'DM Mono', monospace;
   font-size: 9px; color: var(--text3);
   flex-shrink: 0;
 }
@@ -301,7 +292,6 @@ body {
   position: absolute;
   top: 2px;
   left: 4px;
-  font-family: 'DM Mono', monospace;
   font-size: 8px;
   color: #7a90ad;
   white-space: nowrap;
@@ -378,7 +368,6 @@ body {
   border: 1px solid var(--border2);
   border-radius: 6px;
   color: var(--text);
-  font-family: 'DM Mono', monospace;
   font-size: 12px;
   outline: none;
   transition: border-color .15s;
@@ -416,7 +405,6 @@ input[type=range]::-webkit-slider-thumb {
   background: #556d94;
 }
 .range-val {
-  font-family: 'DM Mono', monospace;
   font-size: 12px; color: #556d94;
   margin-top: 4px;
 }

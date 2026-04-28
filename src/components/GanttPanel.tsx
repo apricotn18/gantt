@@ -109,12 +109,12 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
                 onChange={e => setInputVal(e.target.value)}
                 onBlur={commitEdit}
                 onKeyDown={e => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') setEditingCell(null); }}
-                style={{ width: DAY_W - 2, height: barH - 2, fontSize: 9, textAlign: 'center', padding: 0, border: '1px solid var(--accent)', borderRadius: 2, background: '#fff', color: '#333' }}
+                style={{ width: '100%', height: '100%', background: 'transparent', border: '1px solid transparent', fontSize: 10, textAlign: 'center', padding: 0, outline: 'none', color: '#333' }}
               />
             ) : (
               <button
                 onClick={() => openEdit(capturedTaskId, capturedDate, hoursVal)}
-                style={{ width: DAY_W - 2, height: barH - 2, background: hoursVal > 0 ? 'rgba(0,0,0,0.08)' : 'transparent', border: '1px solid transparent', borderRadius: 2, padding: 0, fontSize: 9, color: hoursVal > 0 ? '#333' : '#bbb', cursor: 'text' }}
+                style={{ width: '100%', height: '100%', background: 'transparent', border: '1px solid transparent', fontSize: 10, color: hoursVal > 0 ? '#333' : 'transparent' }}
                 title={`${dateKey}`}
               >
                 {hoursVal > 0 ? hoursVal : ''}
