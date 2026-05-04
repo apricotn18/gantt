@@ -36,12 +36,16 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
   const todayOffset = Math.floor((today.getTime() - minD.getTime()) / 86400000) * DAY_W;
 
   const dailyHours = new Map<string, number>();
+  const progressMap = new Map<number, number>();
   tasks.forEach(t => {
     t.children.forEach(c => {
       Object.entries(c.hours).forEach(([date, h]) => {
         dailyHours.set(date, (dailyHours.get(date) ?? 0) + h);
       });
     });
+    const total = t.children.reduce((s, c) => s + Object.values(c.hours).reduce((a, b) => a + b, 0), 0);
+    const done  = t.children.filter(c => c.status === 'done').reduce((s, c) => s + Object.values(c.hours).reduce((a, b) => a + b, 0), 0);
+    if (total > 0) progressMap.set(t.id, done / total);
   });
 
   const commitEdit = () => {
@@ -79,7 +83,10 @@ export default function GanttPanel({ tasks, visible, scrollRef, onScrollSync, on
             className="gantt-bar"
             style={{ width: '100%', height: '100%', background: `${t.color}33`, position: 'relative', overflow: 'hidden' }}
           >
-{DAY_W >= 16 && bw > 40 && <div className="gantt-bar-label">{t.name}</div>}
+            {progressMap.has(t.id) && (
+              <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progressMap.get(t.id)! * 100}%`, background: `${t.color}88`, transition: 'width .3s' }} />
+            )}
+            {DAY_W >= 16 && bw > 40 && <div className="gantt-bar-label">{t.name}</div>}
           </div>
         </button>
       );

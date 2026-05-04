@@ -1,6 +1,7 @@
-import type { VisibleTask } from '../types';
+import type { Task, VisibleTask } from '../types';
 
 interface Props {
+  tasks: Task[];
   visible: VisibleTask[];
   onScrollSync: (scrollTop: number) => void;
   scrollRef: React.RefObject<HTMLDivElement>;
@@ -10,10 +11,21 @@ interface Props {
   onToggleStatus: (id: number) => void;
 }
 
+function childHours(task: Task) {
+  const total = task.children.reduce((s, c) => s + Object.values(c.hours).reduce((a, b) => a + b, 0), 0);
+  const done  = task.children.filter(c => c.status === 'done').reduce((s, c) => s + Object.values(c.hours).reduce((a, b) => a + b, 0), 0);
+  return { total, done };
+}
+
 export default function WBSPanel({
-  visible, onScrollSync, scrollRef,
+  tasks, visible, onScrollSync, scrollRef,
   onToggleExpand, onEdit, onAddSub, onToggleStatus,
 }: Props) {
+  const progressMap = new Map(tasks.map(t => {
+    const { total, done } = childHours(t);
+    return [t.id, total > 0 ? Math.round(done / total * 100) : null];
+  }));
+
   return (
     <div className="wbs-panel">
       <div className="wbs-header">
@@ -80,7 +92,9 @@ export default function WBSPanel({
                 <div className="task-date">{t.isRoot ? t.end.slice(5).replace('-', '/') : ''}</div>
                 <div className="progress-cell">
                   <span className="progress-pct">
-                    {t.hours != null ? `${Object.values(t.hours).reduce((a, b) => a + b, 0)}h` : '—'}
+                    {t.isRoot
+                      ? (progressMap.get(t.id) != null ? `${progressMap.get(t.id)}%` : '—')
+                      : `${Object.values(t.hours ?? {}).reduce((a, b) => a + b, 0)}h`}
                   </span>
                 </div>
               </div>

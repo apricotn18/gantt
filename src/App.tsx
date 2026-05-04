@@ -152,6 +152,7 @@ export default function App() {
 
       <div className="main">
         <WBSPanel
+          tasks={tasks}
           visible={visible}
           scrollRef={wbsScrollRef}
           onScrollSync={top => syncScroll('wbs', top)}
