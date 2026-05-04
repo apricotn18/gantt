@@ -54,7 +54,7 @@ export function calcRange(tasks: Task[]): { minD: Date; maxD: Date } {
 export function visibleTasks(tasks: Task[]): VisibleTask[] {
   const result: VisibleTask[] = [];
   tasks.forEach(t => {
-    result.push({ id: t.id, name: t.name, start: t.start, end: t.end, color: t.color, hours: null, isRoot: true, expanded: t.expanded });
+    result.push({ id: t.id, name: t.name, start: t.start, end: t.end, color: t.color, hours: null, isRoot: true, expanded: t.expanded, archived: t.archived });
     if (t.expanded) {
       t.children.forEach(c => {
         result.push({ id: c.id, name: c.name, start: t.start, end: t.end, color: t.color, hours: c.hours, isRoot: false, expanded: false, status: c.status });

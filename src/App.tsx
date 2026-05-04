@@ -42,6 +42,8 @@ let nextId = 20;
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [modal, setModal] = useState<ModalState>({ open: false, editingId: null, isAddingSub: false, addSubParentId: null });
+  const [showDone, setShowDone] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   const wbsScrollRef = useRef<HTMLDivElement>(null);
   const ganttScrollRef = useRef<HTMLDivElement>(null);
@@ -49,7 +51,8 @@ export default function App() {
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }, [tasks]);
 
-  const visible = visibleTasks(tasks);
+  const filteredTasks = tasks.filter(t => showArchived || !t.archived);
+  const visible = visibleTasks(filteredTasks).filter(t => showDone || t.isRoot || t.status !== 'done');
 
   const syncScroll = useCallback((source: 'wbs' | 'gantt', scrollTop: number) => {
     if (syncingRef.current) return;
@@ -152,6 +155,11 @@ export default function App() {
     })));
   };
 
+  const handleArchive = (id: number) => {
+    setTasks(ts => ts.map(t => t.id === id ? { ...t, archived: !t.archived } : t));
+    closeModal();
+  };
+
   const handleDelete = (id: number) => {
     const rootTask = tasks.find(x => x.id === id);
     if (rootTask) {
@@ -189,6 +197,15 @@ export default function App() {
           </svg>
           タスク追加
         </button>
+        <button className="btn" onClick={() => setShowDone(v => !v)}>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="12" height="12" rx="2.5"/>
+            {showDone
+              ? <polyline points="4.5,8.5 7,11 11.5,5.5"/>
+              : <line x1="4" y1="12" x2="12" y2="4" strokeWidth="1.5"/>}
+          </svg>
+          {showDone ? '完了を非表示' : '完了を表示'}
+        </button>
         <button className="btn" onClick={goToToday}>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="2" y="3" width="12" height="11" rx="2"/>
@@ -196,11 +213,19 @@ export default function App() {
           </svg>
           今日
         </button>
+        <div style={{ marginLeft: 'auto' }} />
+        <button className="btn" onClick={() => setShowArchived(v => !v)}>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="2" y="5" width="12" height="9" rx="1"/>
+            <path d="M1 5h14M6 5V3h4v2"/>
+          </svg>
+          {showArchived ? 'アーカイブを非表示' : 'アーカイブを表示'}
+        </button>
       </div>
 
       <div className="main">
         <WBSPanel
-          tasks={tasks}
+          tasks={filteredTasks}
           visible={visible}
           scrollRef={wbsScrollRef}
           onScrollSync={top => syncScroll('wbs', top)}
@@ -211,7 +236,7 @@ export default function App() {
           onReorder={handleReorder}
         />
         <GanttPanel
-          tasks={tasks}
+          tasks={filteredTasks}
           visible={visible}
           scrollRef={ganttScrollRef}
           onScrollSync={top => syncScroll('gantt', top)}
@@ -220,7 +245,7 @@ export default function App() {
         />
       </div>
 
-      <TaskModal modal={modal} tasks={tasks} onClose={closeModal} onSubmit={handleSubmit} onDelete={handleDelete} />
+      <TaskModal modal={modal} tasks={tasks} onClose={closeModal} onSubmit={handleSubmit} onDelete={handleDelete} onArchive={handleArchive} />
     </>
   );
 }

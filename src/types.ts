@@ -12,6 +12,7 @@ export interface Task {
   end: string;
   color: string;
   expanded: boolean;
+  archived?: boolean;
   children: ChildTask[];
 }
 
@@ -25,6 +26,7 @@ export interface VisibleTask {
   isRoot: boolean;
   expanded: boolean;
   status?: 'done' | 'todo';
+  archived?: boolean;
 }
 
 export interface ModalState {

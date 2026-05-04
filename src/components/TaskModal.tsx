@@ -8,9 +8,10 @@ interface Props {
   onClose: () => void;
   onSubmit: (data: { name: string; start: string; end: string; color: string }) => void;
   onDelete: (id: number) => void;
+  onArchive: (id: number) => void;
 }
 
-export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete }: Props) {
+export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete, onArchive }: Props) {
   const nameRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState('');
   const [start, setStart] = useState('');
@@ -64,9 +65,19 @@ export default function TaskModal({ modal, tasks, onClose, onSubmit, onDelete }:
       <div className="modal">
         <div className="modal-header">
           <h2>{title}</h2>
-          {modal.editingId !== null && (
-            <button className="btn danger" onClick={() => onDelete(modal.editingId!)}>削除</button>
-          )}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {modal.editingId !== null && !isSub && (() => {
+              const task = tasks.find(t => t.id === modal.editingId);
+              return (
+                <button className="btn archive" onClick={() => onArchive(modal.editingId!)}>
+                  {task?.archived ? 'アーカイブ解除' : 'アーカイブ'}
+                </button>
+              );
+            })()}
+            {modal.editingId !== null && (
+              <button className="btn danger" onClick={() => onDelete(modal.editingId!)}>削除</button>
+            )}
+          </div>
         </div>
         <div className="form-group">
           <label>タスク名</label>

@@ -87,7 +87,7 @@ export default function WBSPanel({
                 }}
               >
                 <div
-                  className={`task-row${t.isRoot ? '' : ' sub-task'}`}
+                  className={`task-row${t.isRoot ? '' : ' sub-task'}${t.archived ? ' archived' : ''}`}
                   onClick={() => t.isRoot && onToggleExpand(t.id)}
                 >
                   <div className="task-name-cell">

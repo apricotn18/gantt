@@ -66,7 +66,9 @@ body {
 .btn.primary:hover { background: #4a6080; border-color: #4a6080; color: #ffffff; }
 .btn.danger { background: transparent; border-color: inherit; color: #ef4444; }
 .btn.danger:hover { background: #ffd1d1; }
-.btn svg { width: 13px; height: 13px; }
+.btn.archive { background: transparent; border-color: inherit; color: #ec4899; }
+.btn.archive:hover { background: #fce7f3; }
+.btn svg { width: 13px; height: 13px; transform: translateY(1px); }
 
 
 /* ── Main Layout ── */
@@ -127,6 +129,9 @@ body {
 .task-label:hover { color: #556d94; text-decoration: underline; }
 .task-row.selected { background: rgba(59,125,232,.08); }
 .task-row.sub-task { background: #fff; }
+.task-row.archived { background: #f5f5f7; color: var(--text3); }
+.task-row.archived .task-color-dot { opacity: .4; }
+.task-row.archived .task-label { color: var(--text3); }
 
 
 .task-row > div {
@@ -164,7 +169,6 @@ body {
 .indent { display: inline-block; flex-shrink: 0; }
 
 .task-label {
-  min-width: 60%;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-size: 12px;
   font-weight: 600;
