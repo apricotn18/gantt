@@ -7,17 +7,17 @@ import { calcRange, today, visibleTasks } from './utils';
 
 const INITIAL_TASKS: Task[] = [
   { id:1,  name:'フェーズ1：要件定義', start:'2026-05-01', end:'2026-05-31', color:'#0ea5e9', expanded:true,  children:[
-    { id:2,  name:'ヒアリング・調査', hours:{'2026-05-01':3,'2026-05-02':4,'2026-05-07':3,'2026-05-08':2,'2026-05-11':4,'2026-05-12':3,'2026-05-13':2} },
-    { id:3,  name:'要件書作成',       hours:{'2026-05-14':4,'2026-05-15':3,'2026-05-18':4,'2026-05-19':2,'2026-05-20':3,'2026-05-21':4,'2026-05-22':2} },
+    { id:2,  name:'ヒアリング・調査', status:'todo', hours:{'2026-05-01':3,'2026-05-02':4,'2026-05-07':3,'2026-05-08':2,'2026-05-11':4,'2026-05-12':3,'2026-05-13':2} },
+    { id:3,  name:'要件書作成',       status:'todo', hours:{'2026-05-14':4,'2026-05-15':3,'2026-05-18':4,'2026-05-19':2,'2026-05-20':3,'2026-05-21':4,'2026-05-22':2} },
   ]},
   { id:4,  name:'フェーズ2：設計',    start:'2026-05-01', end:'2026-05-30', color:'#06b6d4', expanded:true,  children:[
-    { id:5,  name:'UI/UXデザイン',    hours:{'2026-05-01':2,'2026-05-08':3,'2026-05-11':4,'2026-05-12':4,'2026-05-13':3,'2026-05-14':2,'2026-05-15':3} },
-    { id:6,  name:'DB設計',           hours:{'2026-05-18':3,'2026-05-19':4,'2026-05-20':3,'2026-05-21':2,'2026-05-25':4,'2026-05-26':3,'2026-05-27':2} },
+    { id:5,  name:'UI/UXデザイン',    status:'todo', hours:{'2026-05-01':2,'2026-05-08':3,'2026-05-11':4,'2026-05-12':4,'2026-05-13':3,'2026-05-14':2,'2026-05-15':3} },
+    { id:6,  name:'DB設計',           status:'todo', hours:{'2026-05-18':3,'2026-05-19':4,'2026-05-20':3,'2026-05-21':2,'2026-05-25':4,'2026-05-26':3,'2026-05-27':2} },
   ]},
   { id:7,  name:'フェーズ3：開発',    start:'2026-06-01', end:'2026-06-30', color:'#10b981', expanded:true,  children:[
-    { id:8,  name:'フロントエンド実装', hours:{'2026-06-01':4,'2026-06-02':3,'2026-06-03':4,'2026-06-08':3,'2026-06-09':4,'2026-06-10':2,'2026-06-11':3} },
-    { id:9,  name:'バックエンド実装',   hours:{'2026-06-15':4,'2026-06-16':3,'2026-06-17':4,'2026-06-18':3,'2026-06-22':4,'2026-06-23':2,'2026-06-24':3} },
-    { id:10, name:'テスト',             hours:{'2026-06-08':2,'2026-06-09':2,'2026-06-15':3,'2026-06-16':2,'2026-06-22':3,'2026-06-23':3,'2026-06-24':2} },
+    { id:8,  name:'フロントエンド実装', status:'todo', hours:{'2026-06-01':4,'2026-06-02':3,'2026-06-03':4,'2026-06-08':3,'2026-06-09':4,'2026-06-10':2,'2026-06-11':3} },
+    { id:9,  name:'バックエンド実装',   status:'todo', hours:{'2026-06-15':4,'2026-06-16':3,'2026-06-17':4,'2026-06-18':3,'2026-06-22':4,'2026-06-23':2,'2026-06-24':3} },
+    { id:10, name:'テスト',             status:'todo', hours:{'2026-06-08':2,'2026-06-09':2,'2026-06-15':3,'2026-06-16':2,'2026-06-22':3,'2026-06-23':3,'2026-06-24':2} },
   ]},
   { id:11, name:'フェーズ4：リリース', start:'2026-08-01', end:'2026-08-31', color:'#ef4444', expanded:false, children:[] },
 ];
@@ -69,7 +69,7 @@ export default function App() {
     } else if (modal.isAddingSub && modal.addSubParentId !== null) {
       const pid = modal.addSubParentId;
       setTasks(ts => ts.map(t => t.id === pid
-        ? { ...t, expanded: true, children: [...t.children, { id: nextId++, name: data.name, hours: {} }] }
+        ? { ...t, expanded: true, children: [...t.children, { id: nextId++, name: data.name, hours: {}, status: 'todo' as const }] }
         : t
       ));
     } else {
@@ -80,6 +80,13 @@ export default function App() {
   };
 
   const toggleExpand = (id: number) => setTasks(ts => ts.map(t => t.id === id ? { ...t, expanded: !t.expanded } : t));
+
+  const handleToggleStatus = (id: number) => {
+    setTasks(ts => ts.map(t => ({
+      ...t,
+      children: t.children.map(c => c.id === id ? { ...c, status: c.status === 'done' ? 'todo' as const : 'done' as const } : c),
+    })));
+  };
 
   const handleUpdateHours = (taskId: number, date: string, value: number) => {
     setTasks(ts => ts.map(t => ({
@@ -147,6 +154,7 @@ export default function App() {
           onToggleExpand={toggleExpand}
           onEdit={openEditModal}
           onAddSub={openAddSubModal}
+          onToggleStatus={handleToggleStatus}
         />
         <GanttPanel
           tasks={tasks}

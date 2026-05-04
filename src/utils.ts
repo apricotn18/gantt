@@ -57,7 +57,7 @@ export function visibleTasks(tasks: Task[]): VisibleTask[] {
     result.push({ id: t.id, name: t.name, start: t.start, end: t.end, color: t.color, hours: null, isRoot: true, expanded: t.expanded });
     if (t.expanded) {
       t.children.forEach(c => {
-        result.push({ id: c.id, name: c.name, start: t.start, end: t.end, color: t.color, hours: c.hours, isRoot: false, expanded: false });
+        result.push({ id: c.id, name: c.name, start: t.start, end: t.end, color: t.color, hours: c.hours, isRoot: false, expanded: false, status: c.status });
       });
     }
   });

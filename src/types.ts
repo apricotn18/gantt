@@ -2,6 +2,7 @@ export interface ChildTask {
   id: number;
   name: string;
   hours: Record<string, number>;
+  status: 'done' | 'todo';
 }
 
 export interface Task {
@@ -23,6 +24,7 @@ export interface VisibleTask {
   hours: Record<string, number> | null;
   isRoot: boolean;
   expanded: boolean;
+  status?: 'done' | 'todo';
 }
 
 export interface ModalState {

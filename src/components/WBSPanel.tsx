@@ -7,11 +7,12 @@ interface Props {
   onToggleExpand: (id: number) => void;
   onEdit: (id: number) => void;
   onAddSub: (id: number) => void;
+  onToggleStatus: (id: number) => void;
 }
 
 export default function WBSPanel({
   visible, onScrollSync, scrollRef,
-  onToggleExpand, onEdit, onAddSub,
+  onToggleExpand, onEdit, onAddSub, onToggleStatus,
 }: Props) {
   return (
     <div className="wbs-panel">
@@ -54,7 +55,24 @@ export default function WBSPanel({
                     <div className="expand-placeholder" />
                   )}
                   {t.isRoot && <div className="task-color-dot" style={{ background: t.color }} />}
-                  <button className="task-label" onClick={e => { e.stopPropagation(); onEdit(t.id); }}>{t.name}</button>
+                  {!t.isRoot && (
+                    <button
+                      className={`status-btn${t.status === 'done' ? ' done' : ''}`}
+                      style={t.status === 'done' ? { borderColor: t.color } : undefined}
+                      onClick={e => { e.stopPropagation(); onToggleStatus(t.id); }}
+                      title={t.status === 'done' ? '完了' : '未完了'}
+                    >
+                      {t.status === 'done' && (
+                        <svg viewBox="0 0 10 10" fill="none" stroke={t.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="10" height="10">
+                          <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                  <button
+                    className={`task-label${!t.isRoot && t.status === 'done' ? ' done' : ''}`}
+                    onClick={e => { e.stopPropagation(); onEdit(t.id); }}
+                  >{t.name}</button>
                 </div>
                 <div className="task-date">{t.isRoot ? t.start.slice(5).replace('-', '/') : ''}</div>
                 <div className="task-date">{t.isRoot ? t.end.slice(5).replace('-', '/') : ''}</div>
@@ -67,6 +85,7 @@ export default function WBSPanel({
             </div>
           ))
         )}
+
       </div>
     </div>
   );
