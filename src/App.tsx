@@ -22,15 +22,32 @@ const INITIAL_TASKS: Task[] = [
   { id:11, name:'フェーズ4：リリース', start:'2026-08-01', end:'2026-08-31', color:'#ef4444', expanded:false, children:[] },
 ];
 
+const STORAGE_KEY = 'gantt_tasks';
+
+function loadTasks(): Task[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Task[];
+      const maxId = parsed.flatMap(t => [t.id, ...t.children.map(c => c.id)]).reduce((a, b) => Math.max(a, b), 0);
+      nextId = maxId + 1;
+      return parsed;
+    }
+  } catch { /* 破損データは無視 */ }
+  return INITIAL_TASKS;
+}
+
 let nextId = 20;
 
 export default function App() {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [modal, setModal] = useState<ModalState>({ open: false, editingId: null, isAddingSub: false, addSubParentId: null });
 
   const wbsScrollRef = useRef<HTMLDivElement>(null);
   const ganttScrollRef = useRef<HTMLDivElement>(null);
   const syncingRef = useRef(false);
+
+  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }, [tasks]);
 
   const visible = visibleTasks(tasks);
 
