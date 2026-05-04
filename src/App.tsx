@@ -3,20 +3,23 @@ import GanttPanel from './components/GanttPanel';
 import TaskModal from './components/TaskModal';
 import WBSPanel from './components/WBSPanel';
 import type { ModalState, Task } from './types';
-import { calcRange, syncParentProgress, today, visibleTasks } from './utils';
+import { calcRange, today, visibleTasks } from './utils';
 
 const INITIAL_TASKS: Task[] = [
-  { id:1,  name:'フェーズ1：要件定義',   start:'2026-05-01', end:'2026-05-31', progress:100, color:'#0ea5e9', expanded:true,  parentId:null },
-  { id:2,  name:'ヒアリング・調査',       start:'2026-05-01', end:'2026-05-15', progress:100, color:'#0ea5e9', expanded:false, parentId:1 },
-  { id:3,  name:'要件書作成',             start:'2026-05-16', end:'2026-05-31', progress:100, color:'#0ea5e9', expanded:false, parentId:1 },
-  { id:4,  name:'フェーズ2：設計',        start:'2026-05-01', end:'2026-05-30', progress:80,  color:'#06b6d4', expanded:true,  parentId:null },
-  { id:5,  name:'UI/UXデザイン',          start:'2026-05-01', end:'2026-05-20', progress:100, color:'#06b6d4', expanded:false, parentId:4 },
-  { id:6,  name:'DB設計',                 start:'2026-05-10', end:'2026-05-30', progress:60,  color:'#06b6d4', expanded:false, parentId:4 },
-  { id:7,  name:'フェーズ3：開発',        start:'2026-06-01', end:'2026-06-31', progress:30,  color:'#10b981', expanded:true,  parentId:null },
-  { id:8,  name:'フロントエンド実装',     start:'2026-06-01', end:'2026-06-30', progress:40,  color:'#10b981', expanded:false, parentId:7 },
-  { id:9,  name:'バックエンド実装',       start:'2026-06-15', end:'2026-06-15', progress:25,  color:'#10b981', expanded:false, parentId:7 },
-  { id:10, name:'テスト',                 start:'2026-07-01', end:'2026-07-31', progress:0,   color:'#f59e0b', expanded:false, parentId:7 },
-  { id:11, name:'フェーズ4：リリース',    start:'2026-08-01', end:'2026-08-31', progress:0,   color:'#ef4444', expanded:false, parentId:null },
+  { id:1,  name:'フェーズ1：要件定義', start:'2026-05-01', end:'2026-05-31', color:'#0ea5e9', expanded:true,  children:[
+    { id:2,  name:'ヒアリング・調査', status:'todo', hours:{'2026-05-01':3,'2026-05-02':4,'2026-05-07':3,'2026-05-08':2,'2026-05-11':4,'2026-05-12':3,'2026-05-13':2} },
+    { id:3,  name:'要件書作成',       status:'todo', hours:{'2026-05-14':4,'2026-05-15':3,'2026-05-18':4,'2026-05-19':2,'2026-05-20':3,'2026-05-21':4,'2026-05-22':2} },
+  ]},
+  { id:4,  name:'フェーズ2：設計',    start:'2026-05-01', end:'2026-05-30', color:'#06b6d4', expanded:true,  children:[
+    { id:5,  name:'UI/UXデザイン',    status:'todo', hours:{'2026-05-01':2,'2026-05-08':3,'2026-05-11':4,'2026-05-12':4,'2026-05-13':3,'2026-05-14':2,'2026-05-15':3} },
+    { id:6,  name:'DB設計',           status:'todo', hours:{'2026-05-18':3,'2026-05-19':4,'2026-05-20':3,'2026-05-21':2,'2026-05-25':4,'2026-05-26':3,'2026-05-27':2} },
+  ]},
+  { id:7,  name:'フェーズ3：開発',    start:'2026-06-01', end:'2026-06-30', color:'#10b981', expanded:true,  children:[
+    { id:8,  name:'フロントエンド実装', status:'todo', hours:{'2026-06-01':4,'2026-06-02':3,'2026-06-03':4,'2026-06-08':3,'2026-06-09':4,'2026-06-10':2,'2026-06-11':3} },
+    { id:9,  name:'バックエンド実装',   status:'todo', hours:{'2026-06-15':4,'2026-06-16':3,'2026-06-17':4,'2026-06-18':3,'2026-06-22':4,'2026-06-23':2,'2026-06-24':3} },
+    { id:10, name:'テスト',             status:'todo', hours:{'2026-06-08':2,'2026-06-09':2,'2026-06-15':3,'2026-06-16':2,'2026-06-22':3,'2026-06-23':3,'2026-06-24':2} },
+  ]},
+  { id:11, name:'フェーズ4：リリース', start:'2026-08-01', end:'2026-08-31', color:'#ef4444', expanded:false, children:[] },
 ];
 
 let nextId = 20;
@@ -52,17 +55,25 @@ export default function App() {
   const openEditModal = (id: number) => setModal({ open: true, editingId: id, isAddingSub: false, addSubParentId: null });
   const closeModal = () => setModal(m => ({ ...m, open: false }));
 
-  const handleSubmit = (data: { name: string; start: string; end: string; progress: number; color: string }) => {
+  const handleSubmit = (data: { name: string; start: string; end: string; color: string }) => {
     if (modal.editingId !== null) {
-      setTasks(ts => syncParentProgress(ts.map(t => t.id === modal.editingId ? { ...t, ...data } : t)));
+      const isRoot = tasks.some(t => t.id === modal.editingId);
+      if (isRoot) {
+        setTasks(ts => ts.map(t => t.id === modal.editingId ? { ...t, ...data } : t));
+      } else {
+        setTasks(ts => ts.map(t => ({
+          ...t,
+          children: t.children.map(c => c.id === modal.editingId ? { ...c, name: data.name } : c),
+        })));
+      }
     } else if (modal.isAddingSub && modal.addSubParentId !== null) {
       const pid = modal.addSubParentId;
-      setTasks(ts => syncParentProgress([
-        ...ts.map(t => t.id === pid ? { ...t, expanded: true } : t),
-        { id: nextId++, ...data, expanded: false, parentId: pid },
-      ]));
+      setTasks(ts => ts.map(t => t.id === pid
+        ? { ...t, expanded: true, children: [...t.children, { id: nextId++, name: data.name, hours: {}, status: 'todo' as const }] }
+        : t
+      ));
     } else {
-      setTasks(ts => [...ts, { id: nextId++, ...data, expanded: true, parentId: null }]);
+      setTasks(ts => [...ts, { id: nextId++, name: data.name, start: data.start, end: data.end, color: data.color, expanded: true, children: [] }]);
     }
     closeModal();
     setTimeout(goToToday, 50);
@@ -70,13 +81,47 @@ export default function App() {
 
   const toggleExpand = (id: number) => setTasks(ts => ts.map(t => t.id === id ? { ...t, expanded: !t.expanded } : t));
 
+  const handleToggleStatus = (id: number) => {
+    setTasks(ts => {
+      const pi = ts.findIndex(t => t.children.some(c => c.id === id));
+      if (pi === -1) return ts;
+      return ts.map((t, i) => i !== pi ? t : {
+        ...t,
+        children: t.children.map(c => c.id === id ? { ...c, status: c.status === 'done' ? 'todo' : 'done' } : c),
+      });
+    });
+  };
+
+  const handleUpdateHours = (taskId: number, date: string, value: number) => {
+    setTasks(ts => ts.map(t => ({
+      ...t,
+      children: t.children.map(c => c.id !== taskId ? c : {
+        ...c,
+        hours: value > 0
+          ? { ...c.hours, [date]: value }
+          : Object.fromEntries(Object.entries(c.hours).filter(([k]) => k !== date)),
+      }),
+    })));
+  };
+
   const handleDelete = (id: number) => {
-    const t = tasks.find(x => x.id === id);
-    if (!t) return;
-    const hasSubs = tasks.some(x => x.parentId === id);
-    const msg = hasSubs ? `「${t.name}」とそのサブタスクをすべて削除しますか？` : `「${t.name}」を削除しますか？`;
-    if (!confirm(msg)) return;
-    setTasks(ts => syncParentProgress(ts.filter(x => x.id !== id && x.parentId !== id)));
+    const rootTask = tasks.find(x => x.id === id);
+    if (rootTask) {
+      const msg = rootTask.children.length > 0
+        ? `「${rootTask.name}」とそのサブタスクをすべて削除しますか？`
+        : `「${rootTask.name}」を削除しますか？`;
+      if (!confirm(msg)) return;
+      setTasks(ts => ts.filter(t => t.id !== id));
+    } else {
+      const parent = tasks.find(t => t.children.some(c => c.id === id));
+      if (!parent) return;
+      const child = parent.children.find(c => c.id === id)!;
+      if (!confirm(`「${child.name}」を削除しますか？`)) return;
+      setTasks(ts => ts.map(t => t.id === parent.id
+        ? { ...t, children: t.children.filter(c => c.id !== id) }
+        : t
+      ));
+    }
     closeModal();
   };
 
@@ -107,12 +152,14 @@ export default function App() {
 
       <div className="main">
         <WBSPanel
+          tasks={tasks}
           visible={visible}
           scrollRef={wbsScrollRef}
           onScrollSync={top => syncScroll('wbs', top)}
           onToggleExpand={toggleExpand}
           onEdit={openEditModal}
           onAddSub={openAddSubModal}
+          onToggleStatus={handleToggleStatus}
         />
         <GanttPanel
           tasks={tasks}
@@ -120,6 +167,7 @@ export default function App() {
           scrollRef={ganttScrollRef}
           onScrollSync={top => syncScroll('gantt', top)}
           onEdit={openEditModal}
+          onUpdateHours={handleUpdateHours}
         />
       </div>
 

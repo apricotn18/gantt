@@ -53,24 +53,17 @@ export function calcRange(tasks: Task[]): { minD: Date; maxD: Date } {
 
 export function visibleTasks(tasks: Task[]): VisibleTask[] {
   const result: VisibleTask[] = [];
-  const roots = tasks.filter(t => !t.parentId);
-  roots.forEach(r => {
-    result.push({ ...r, isRoot: true });
-    const subs = tasks.filter(t => t.parentId === r.id);
-    if (r.expanded) subs.forEach(s => result.push({ ...s, isRoot: false }));
+  tasks.forEach(t => {
+    result.push({ id: t.id, name: t.name, start: t.start, end: t.end, color: t.color, hours: null, isRoot: true, expanded: t.expanded });
+    if (t.expanded) {
+      t.children.forEach(c => {
+        result.push({ id: c.id, name: c.name, start: t.start, end: t.end, color: t.color, hours: c.hours, isRoot: false, expanded: false, status: c.status });
+      });
+    }
   });
   return result;
 }
 
-export function syncParentProgress(tasks: Task[]): Task[] {
-  return tasks.map(t => {
-    if (t.parentId !== null) return t;
-    const subs = tasks.filter(s => s.parentId === t.id);
-    if (subs.length === 0) return t;
-    const avg = Math.round(subs.reduce((sum, s) => sum + s.progress, 0) / subs.length);
-    return { ...t, progress: avg };
-  });
-}
 
 export function computeBodyHeight(vis: VisibleTask[]): number {
   let h = 0;

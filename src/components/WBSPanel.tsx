@@ -1,25 +1,38 @@
-import type { VisibleTask } from '../types';
+import type { Task, VisibleTask } from '../types';
 
 interface Props {
+  tasks: Task[];
   visible: VisibleTask[];
   onScrollSync: (scrollTop: number) => void;
   scrollRef: React.RefObject<HTMLDivElement>;
   onToggleExpand: (id: number) => void;
   onEdit: (id: number) => void;
   onAddSub: (id: number) => void;
+  onToggleStatus: (id: number) => void;
+}
+
+function childHours(task: Task) {
+  const total = task.children.reduce((s, c) => s + Object.values(c.hours).reduce((a, b) => a + b, 0), 0);
+  const done  = task.children.filter(c => c.status === 'done').reduce((s, c) => s + Object.values(c.hours).reduce((a, b) => a + b, 0), 0);
+  return { total, done };
 }
 
 export default function WBSPanel({
-  visible, onScrollSync, scrollRef,
-  onToggleExpand, onEdit, onAddSub,
+  tasks, visible, onScrollSync, scrollRef,
+  onToggleExpand, onEdit, onAddSub, onToggleStatus,
 }: Props) {
+  const progressMap = new Map(tasks.map(t => {
+    const { total, done } = childHours(t);
+    return [t.id, total > 0 ? Math.round(done / total * 100) : null];
+  }));
+
   return (
     <div className="wbs-panel">
       <div className="wbs-header">
         <div>タスク名</div>
         <div>開始日</div>
         <div>終了日</div>
-        <div>進捗</div>
+        <div>工数</div>
       </div>
       <div
         className="wbs-body"
@@ -36,7 +49,9 @@ export default function WBSPanel({
             タスクがありません
           </div>
         ) : (
-          visible.map(t => (
+          visible.map(t => {
+            const isDone = !t.isRoot && t.status === 'done';
+            return (
             <div key={`${t.id}-${t.isRoot}`}>
               <div
                 className={`task-row${t.isRoot ? '' : ' sub-task'}`}
@@ -53,21 +68,41 @@ export default function WBSPanel({
                   ) : (
                     <div className="expand-placeholder" />
                   )}
-                  <div className="task-color-dot" style={{ background: t.color }} />
-                  <button className="task-label" onClick={e => { e.stopPropagation(); onEdit(t.id); }}>{t.name}</button>
+                  {t.isRoot && <div className="task-color-dot" style={{ background: t.color }} />}
+                  {!t.isRoot && (
+                    <button
+                      className={`status-btn${isDone ? ' done' : ''}`}
+                      style={isDone ? { borderColor: t.color } : undefined}
+                      onClick={e => { e.stopPropagation(); onToggleStatus(t.id); }}
+                      title={isDone ? '完了' : '未完了'}
+                    >
+                      {isDone && (
+                        <svg viewBox="0 0 10 10" fill="none" stroke={t.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="10" height="10">
+                          <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                  <button
+                    className={`task-label${isDone ? ' done' : ''}`}
+                    onClick={e => { e.stopPropagation(); onEdit(t.id); }}
+                  >{t.name}</button>
                 </div>
-                <div className="task-date">{t.start.slice(5).replace('-', '/')}</div>
-                <div className="task-date">{t.end.slice(5).replace('-', '/')}</div>
+                <div className="task-date">{t.isRoot ? t.start.slice(5).replace('-', '/') : ''}</div>
+                <div className="task-date">{t.isRoot ? t.end.slice(5).replace('-', '/') : ''}</div>
                 <div className="progress-cell">
-                  <span className="progress-pct">{t.progress}%</span>
-                  <div className="progress-bar-track">
-                    <div className="progress-bar-fill" style={{ width: `${t.progress}%`, background: t.color }} />
-                  </div>
+                  <span className="progress-pct">
+                    {t.isRoot
+                      ? (progressMap.get(t.id) != null ? `${progressMap.get(t.id)}%` : '—')
+                      : `${Object.values(t.hours ?? {}).reduce((a, b) => a + b, 0)}h`}
+                  </span>
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
+
       </div>
     </div>
   );
