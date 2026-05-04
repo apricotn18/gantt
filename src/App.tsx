@@ -109,6 +109,37 @@ export default function App() {
     });
   };
 
+  const handleReorder = (dragId: number, overId: number, pos: 'before' | 'after') => {
+    if (dragId === overId) return;
+    const dragIsRoot = tasks.some(t => t.id === dragId);
+    const overIsRoot = tasks.some(t => t.id === overId);
+
+    const reorder = <T,>(arr: T[], fromIdx: number, toIdx: number, insertAt: number): T[] => {
+      const next = [...arr];
+      const [item] = next.splice(fromIdx, 1);
+      next.splice(fromIdx < toIdx ? insertAt - 1 : insertAt, 0, item);
+      return next;
+    };
+
+    if (dragIsRoot && overIsRoot) {
+      setTasks(ts => {
+        const fi = ts.findIndex(t => t.id === dragId);
+        const ti = ts.findIndex(t => t.id === overId);
+        return reorder(ts, fi, ti, pos === 'before' ? ti : ti + 1);
+      });
+    } else if (!dragIsRoot && !overIsRoot) {
+      const dragParentId = tasks.find(t => t.children.some(c => c.id === dragId))?.id;
+      const overParentId = tasks.find(t => t.children.some(c => c.id === overId))?.id;
+      if (!dragParentId || dragParentId !== overParentId) return;
+      setTasks(ts => ts.map(t => {
+        if (t.id !== dragParentId) return t;
+        const fi = t.children.findIndex(c => c.id === dragId);
+        const ti = t.children.findIndex(c => c.id === overId);
+        return { ...t, children: reorder(t.children, fi, ti, pos === 'before' ? ti : ti + 1) };
+      }));
+    }
+  };
+
   const handleUpdateHours = (taskId: number, date: string, value: number) => {
     setTasks(ts => ts.map(t => ({
       ...t,
@@ -177,6 +208,7 @@ export default function App() {
           onEdit={openEditModal}
           onAddSub={openAddSubModal}
           onToggleStatus={handleToggleStatus}
+          onReorder={handleReorder}
         />
         <GanttPanel
           tasks={tasks}
