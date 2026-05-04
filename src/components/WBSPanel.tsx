@@ -37,7 +37,9 @@ export default function WBSPanel({
             タスクがありません
           </div>
         ) : (
-          visible.map(t => (
+          visible.map(t => {
+            const isDone = !t.isRoot && t.status === 'done';
+            return (
             <div key={`${t.id}-${t.isRoot}`}>
               <div
                 className={`task-row${t.isRoot ? '' : ' sub-task'}`}
@@ -57,12 +59,12 @@ export default function WBSPanel({
                   {t.isRoot && <div className="task-color-dot" style={{ background: t.color }} />}
                   {!t.isRoot && (
                     <button
-                      className={`status-btn${t.status === 'done' ? ' done' : ''}`}
-                      style={t.status === 'done' ? { borderColor: t.color } : undefined}
+                      className={`status-btn${isDone ? ' done' : ''}`}
+                      style={isDone ? { borderColor: t.color } : undefined}
                       onClick={e => { e.stopPropagation(); onToggleStatus(t.id); }}
-                      title={t.status === 'done' ? '完了' : '未完了'}
+                      title={isDone ? '完了' : '未完了'}
                     >
-                      {t.status === 'done' && (
+                      {isDone && (
                         <svg viewBox="0 0 10 10" fill="none" stroke={t.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="10" height="10">
                           <polyline points="1.5,5 4,7.5 8.5,2.5" />
                         </svg>
@@ -70,7 +72,7 @@ export default function WBSPanel({
                     </button>
                   )}
                   <button
-                    className={`task-label${!t.isRoot && t.status === 'done' ? ' done' : ''}`}
+                    className={`task-label${isDone ? ' done' : ''}`}
                     onClick={e => { e.stopPropagation(); onEdit(t.id); }}
                   >{t.name}</button>
                 </div>
@@ -83,7 +85,8 @@ export default function WBSPanel({
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
 
       </div>

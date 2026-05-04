@@ -82,10 +82,14 @@ export default function App() {
   const toggleExpand = (id: number) => setTasks(ts => ts.map(t => t.id === id ? { ...t, expanded: !t.expanded } : t));
 
   const handleToggleStatus = (id: number) => {
-    setTasks(ts => ts.map(t => ({
-      ...t,
-      children: t.children.map(c => c.id === id ? { ...c, status: c.status === 'done' ? 'todo' as const : 'done' as const } : c),
-    })));
+    setTasks(ts => {
+      const pi = ts.findIndex(t => t.children.some(c => c.id === id));
+      if (pi === -1) return ts;
+      return ts.map((t, i) => i !== pi ? t : {
+        ...t,
+        children: t.children.map(c => c.id === id ? { ...c, status: c.status === 'done' ? 'todo' : 'done' } : c),
+      });
+    });
   };
 
   const handleUpdateHours = (taskId: number, date: string, value: number) => {
